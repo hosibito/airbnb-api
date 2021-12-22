@@ -134,4 +134,4 @@ MEDIA_URL = "/media/"
 AUTH_USER_MODEL = "users.User"
 
 # auto_field
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
