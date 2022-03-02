@@ -35,6 +35,20 @@ class WriteRoomSerializer(serializers.Serializer):
         # 'user': <SimpleLazyObject: <User: hosibito>>}
         return Room_models.objects.create(**validated_data)
 
+    def validate_beds(self, beds):
+        if beds < 5:
+            raise serializers.ValidationError("Your house is too small")
+        else:
+            return beds
+
+    def validate(self, data):
+        check_in = data.get("check_in")
+        check_out = data.get("check_out")
+        if check_in == check_out:
+            raise serializers.ValidationError("Not enough time between changes")
+        else:
+            return data
+
 
 #########################################################
 class _RoomSerializer(serializers.Serializer):

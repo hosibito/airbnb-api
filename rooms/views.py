@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
+from rest_framework.views import APIView
 
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -9,13 +9,13 @@ from .models import Room as Room_models
 from .serializers import ReadRoomSerializer, WriteRoomSerializer
 
 
-@api_view(["GET", "POST"])
-def rooms_view(request):
-    if request.method == "GET":
+class RoomsView(APIView):
+    def get(self, request):
         rooms = Room_models.objects.all()
         serializer = ReadRoomSerializer(rooms, many=True).data
         return Response(serializer)
-    elif request.method == "POST":
+
+    def post(self, request):
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         serializer = WriteRoomSerializer(data=request.data)
@@ -28,17 +28,31 @@ def rooms_view(request):
             return Response(data=room_serializer, status=status.HTTP_200_OK)
         else:
             print(request.data)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            print(serializer.errors)
+            # {'beds': [ErrorDetail(string='Your house is too small', code='invalid')]}
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SeeRoomView(RetrieveAPIView):
+class RoomView(APIView):
+    def get(self, request, pk):
+        print(pk)
+        try:
+            room = Room_models.objects.get(pk=pk)
+            serializer = ReadRoomSerializer(room).data
+            return Response(serializer)
+        except Room_models.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-    queryset = Room_models.objects.all()
-    serializer_class = ReadRoomSerializer
+    def put(self, request):
+        pass
+
+    def delete(self, request):
+        pass
 
 
 ########################################################
-from rest_framework.views import APIView
+
+from rest_framework.decorators import api_view
 
 
 class _ListRoomsView(APIView):
@@ -60,6 +74,36 @@ def list_rooms(request):
 
 
 class __ListRoomsView(ListAPIView):
+
+    queryset = Room_models.objects.all()
+    serializer_class = ReadRoomSerializer
+
+
+@api_view(["GET", "POST"])
+def __rooms_view(request):
+    if request.method == "GET":
+        rooms = Room_models.objects.all()
+        serializer = ReadRoomSerializer(rooms, many=True).data
+        return Response(serializer)
+    elif request.method == "POST":
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        serializer = WriteRoomSerializer(data=request.data)
+        if serializer.is_valid():
+            # print(request.data)
+            # serializer.save(user=request.user)
+            room = serializer.save(user=request.user)
+            room_serializer = ReadRoomSerializer(room).data
+            # return Response(status=status.HTTP_200_OK)
+            return Response(data=room_serializer, status=status.HTTP_200_OK)
+        else:
+            print(request.data)
+            print(serializer.errors)
+            # {'beds': [ErrorDetail(string='Your house is too small', code='invalid')]}
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class _SeeRoomView(RetrieveAPIView):
 
     queryset = Room_models.objects.all()
     serializer_class = ReadRoomSerializer
