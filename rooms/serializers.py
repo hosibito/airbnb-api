@@ -27,6 +27,14 @@ class WriteRoomSerializer(serializers.Serializer):
     check_out = serializers.TimeField(default="00:00:00")
     instant_book = serializers.BooleanField(default=False)
 
+    def create(self, validated_data):
+        print(validated_data)
+        # {'name': 'posttest', 'address': 'wnthwnthwnthagrea', 'price': 3000, 'beds': 3,
+        # 'lat': Decimal('12.000000'), 'lng': Decimal('12.000000'), 'bedrooms': 2, 'bathrooms': 2,
+        # 'check_in': datetime.time(14, 0), 'check_out': datetime.time(16, 0), 'instant_book': False,
+        # 'user': <SimpleLazyObject: <User: hosibito>>}
+        return Room_models.objects.create(**validated_data)
+
 
 #########################################################
 class _RoomSerializer(serializers.Serializer):
