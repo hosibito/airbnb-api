@@ -2,7 +2,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 
 from .models import Room as Room_models
-from .serializers import RoomSerializer, BigRoomSerializer
+from .serializers import RoomSerializer
 
 
 class ListRoomsView(ListAPIView):
@@ -14,7 +14,7 @@ class ListRoomsView(ListAPIView):
 class SeeRoomView(RetrieveAPIView):
 
     queryset = Room_models.objects.all()
-    serializer_class = BigRoomSerializer
+    serializer_class = RoomSerializer
 
 
 ########################################################
@@ -36,5 +36,5 @@ from rest_framework.response import Response
 @api_view(["GET"])
 def list_rooms(request):
     rooms = Room_models.objects.all()
-    serialized_rooms = RoomSerializer(rooms, many=True)
+    serialized_rooms = RoomSerializer(rooms, many=True)  # 한개가 아닌경우 many=True
     return Response(data=serialized_rooms.data)
