@@ -22,6 +22,7 @@ class ReadUserSerializer(serializers.ModelSerializer):
         exclude = (  # 뺄것을 명기
             "is_staff",
             "is_active",
+            "favs",
             "date_joined",
         )
 
